@@ -8,16 +8,15 @@ __product__ = '多人聊天服务端'
 
 import socket, threading, time, os
 
-
-LocalTime = time.strftime('%H:%M:%S',time.localtime(time.time())) #获取本地当前时间
-Host = socket.gethostbyname(socket.gethostname()) #获取本机ip地址
+LocalTime = time.strftime('%H:%M:%S', time.localtime(time.time()))  # 获取本地当前时间
+Host = socket.gethostbyname(socket.gethostname())  # 获取本机ip地址
 Port = 5901
-Buf = 4096 #接收数据大小
+Buf = 4096  # 接收数据大小
 mydict = dict()
 mylist = list()
-Filepath = ('C:\%s' % LocalTime) #保存即时解码后数据，windows不支持:符号，待完善
+Filepath = ('C:\%s' % LocalTime)  # 保存即时解码后数据，windows不支持:符号，待完善
 
-#print(type(Host))
+# print(type(Host))
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.bind((Host, Port))
@@ -25,6 +24,7 @@ print('[*]' + 'INFO' + ':' + 'Socket Create Success')
 sock.listen(5)
 print('[*]' + 'INFO' + ':' + 'Socket Listening Success')
 print('[*]' + 'INFO' + ':' + 'Current Time', LocalTime)
+
 
 # 把whatToSay传给除了exceptNum的所有人
 def tellOthers(exceptNum, whatToSay):
@@ -37,11 +37,11 @@ def tellOthers(exceptNum, whatToSay):
 
 
 def subThreadIn(myconnection, connNumber):
-    nickname = myconnection.recv(Buf).decode() #获取名字
+    nickname = myconnection.recv(Buf).decode()  # 获取名字
     mydict[myconnection.fileno()] = nickname
     mylist.append(myconnection)
-    #print('[*]' + 'INFO' + ':' + int(connNumber) + ' Has Name :', str(nickname))
-    #tellOthers(connNumber, '[*]' + 'INFO' + ':' + mydict[connNumber] + ' ' + 'Join In The Server')
+    # print('[*]' + 'INFO' + ':' + int(connNumber) + ' Has Name :', str(nickname))
+    # tellOthers(connNumber, '[*]' + 'INFO' + ':' + mydict[connNumber] + ' ' + 'Join In The Server')
     while True:
         try:
             recvedMsg = myconnection.recv(Buf).decode()
@@ -54,8 +54,8 @@ def subThreadIn(myconnection, connNumber):
                 mylist.remove(myconnection)
             except:
                 pass
-            #print(mydict[connNumber], '[*]' + 'INFO' + ':' + len(mylist) + 'Left')
-            #tellOthers(connNumber, '[*]' + 'INFO' + ':' + mydict[connNumber] + 'Left')
+            # print(mydict[connNumber], '[*]' + 'INFO' + ':' + len(mylist) + 'Left')
+            # tellOthers(connNumber, '[*]' + 'INFO' + ':' + mydict[connNumber] + 'Left')
             myconnection.close()
             return
 
@@ -67,11 +67,11 @@ while True:
         # connection.settimeout(5)
         buf = connection.recv(Buf).decode()
         if buf == '1':
-            connection.send(b'[*] INFO: Welcome Logging In Server') #btyes类型
+            connection.send(b'[*] INFO: Welcome Logging In Server')  # btyes类型
 
             # 为当前连接开辟一个新的线程
             mythread = threading.Thread(target=subThreadIn, args=(connection, connection.fileno()))
-            mythread.setDaemon(True) #守护进程
+            mythread.setDaemon(True)  # 守护进程
             mythread.start()
 
         else:

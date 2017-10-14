@@ -9,19 +9,19 @@ __product__ = '多人聊天客户端'
 import socket, time, threading, hashlib
 from tkinter import *
 
-
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 my_name = ''
 
-def join_server(event,host,port,nickName,chat_result):
+
+def join_server(event, host, port, nickName, chat_result):
     try:
         chat_result.delete(0.0, END)
         sock.connect((host, port))
         sock.send(b'1')
         print(sock.recv(1024).decode())
-        #nickName = input('[*] INFO: Input You Name：')
-        sock.send(nickName.encode()) #发送名字
-        chat_result.insert(END, '[*] INFO: Login Successful，'+nickName+'\n')
+        # nickName = input('[*] INFO: Input You Name：')
+        sock.send(nickName.encode())  # 发送名字
+        chat_result.insert(END, '[*] INFO: Login Successful，' + nickName + '\n')
         global my_name
         my_name = nickName
         t = threading.Thread(target=recvThreadFunc, args=(chat_result,))
@@ -30,10 +30,11 @@ def join_server(event,host,port,nickName,chat_result):
         chat_result.insert(END, '[*] INFO: Login Failed\n')
         print(e)
 
-def sendThreadFunc(event,chat_result,chat_msg):
+
+def sendThreadFunc(event, chat_result, chat_msg):
     try:
-        #myword = input('[root@01Sec ~]# ')
-        msg_temp = chat_msg.get('1.0',END)[16:]
+        # myword = input('[root@01Sec ~]# ')
+        msg_temp = chat_msg.get('1.0', END)[16:]
         sock.send(msg_temp.encode())
         LocalTime = time.strftime('%H:%M:%S', time.localtime(time.time()))  # 获取本地当前时间
         chat_result.insert(END, LocalTime + ' ' + my_name + ' :' + msg_temp + '\n')
@@ -64,6 +65,7 @@ def recvThreadFunc(chat_result):
         except ConnectionResetError:
             chat_result.insert(END, '[*] WARNING: Server Is Closed!\n')
             print('[*] WARNING: Server Is Closed!')
+
 
 '''
 def start_chat(event,host,port,nickName,chat_result):

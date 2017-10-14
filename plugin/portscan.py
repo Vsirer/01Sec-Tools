@@ -6,7 +6,7 @@ Copyright (c) 2017-2017 01 Security Team
 
 __product__ = "1-65535 tcp scan"
 
-import socket,time,threading,queue
+import socket, time, threading, queue
 from tkinter import messagebox
 from tkinter import *
 
@@ -15,26 +15,27 @@ def portscan(host, ports, port_result):
     try:
 
         while not ports.empty():
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #tcp
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # tcp
             s.settimeout(2)
             port = ports.get()
             result = s.connect_ex((host, int(port)))
             if result == 0:
-                #print("[*]" + host + ":" + str(port) + ">"*20, "Open")
-                port_result.insert(END, "[*]" + host + ":" + str(port) + ">"*20+"Open\n")
+                # print("[*]" + host + ":" + str(port) + ">"*20, "Open")
+                port_result.insert(END, "[*]" + host + ":" + str(port) + ">" * 20 + "Open\n")
             else:
-                #print("[*]" + host + ":" + str(port) + ">" * 20, "Close")
+                # print("[*]" + host + ":" + str(port) + ">" * 20, "Close")
                 port_result.insert(END, "[*]" + host + ":" + str(port) + ">" * 20 + "Close\n")
-            #time.sleep(0.5)
+            # time.sleep(0.5)
             s.close()
     except Exception as e:
         print("scan error")
         print(e)
 
-def scanstart(event,host, ports, port_result,threads):
+
+def scanstart(event, host, ports, port_result, threads):
     try:
         if not host:
-            messagebox.showinfo('01Sec','input')
+            messagebox.showinfo('01Sec', 'input')
             return
 
         t = time.time()
@@ -43,7 +44,7 @@ def scanstart(event,host, ports, port_result,threads):
         print(ports)
         if '-' in ports and ports.count('-') is 1:
             port_temp = ports.split('-')
-            for p in range(int(port_temp[0]),int(port_temp[-1])+1):
+            for p in range(int(port_temp[0]), int(port_temp[-1]) + 1):
                 q_ports.put(p)
         elif ',' in ports:
             port_temp = ports.split(',')
@@ -59,5 +60,5 @@ def scanstart(event,host, ports, port_result,threads):
     except Exception as e:
         print("scan done")
         print(e)
-    #finally:
-        #port_result.insert(END, "\n[*]Scan done\n")
+        # finally:
+        # port_result.insert(END, "\n[*]Scan done\n")
