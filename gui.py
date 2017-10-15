@@ -194,6 +194,14 @@ class MainWindows:
         btn_sprider = Button(fm_right_top, text='爬取')
         btn_sprider.pack(side=LEFT, expand=1)
 
+        btn_sprider_pause = Button(fm_left_top, text='暂停')
+        btn_sprider_pause.pack(side=LEFT, expand=1)
+        # btn_sprider_pause.bind('<ButtonRelease>', lambda x: pause_crack(x, btn_crack_pause))
+
+        btn_sprider_stop = Button(fm_left_top, text='停止')
+        btn_sprider_stop.pack(side=LEFT, expand=1)
+        # btn_sprider_stop.bind('<ButtonRelease>', lambda x: stop_crack(x, btn_crack, btn_crack_pause))
+
         tv_crack = ttk.Treeview(frame_left, show="headings", columns=('url', 'resp'))
         tv_crack.column('url', width=320, anchor=W)
         tv_crack.column('resp', width=10, anchor=CENTER)
