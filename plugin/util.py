@@ -4,9 +4,10 @@
 Copyright (c) 2017-2017 01 Security Team
 """
 
-import os,queue
+import os, queue
 from tkinter import *
 from tkinter import filedialog
+
 
 # 获取字典
 def get_dict(filename):
@@ -15,6 +16,7 @@ def get_dict(filename):
         for i in f.readlines():
             q_crack.put(i)
     return q_crack
+
 
 # 获取目录文件
 def get_dir(tree, parent, loadfile):
@@ -27,6 +29,7 @@ def get_dir(tree, parent, loadfile):
         tree.setvar(p, path)
         if isdir:
             get_dir(tree, oid, path)
+
 
 # 文件选择框
 def choose_file(self, event, filename):

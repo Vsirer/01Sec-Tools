@@ -89,11 +89,22 @@ class MainWindows:
         threads.set(1)
 
         # 扫描按钮绑定事件
-        btn_port = Button(fm1, text='扫描')
+        btn_port = Button(fm1, text='扫描',
+                          command=lambda: scanstart(ipaddrs.get(), '1-1024' if ports.get() is '' else ports.get(),
+                                                    port_result, 1 if threads.get() is '' else int(threads.get()),
+                                                    btn_port))
         btn_port.pack(side=LEFT, expand=1)
-        btn_port.bind('<ButtonRelease>',
-                      lambda x: scanstart(x, ipaddrs.get(), '1-1024' if ports.get() is '' else ports.get(),
-                                          port_result, 1 if threads.get() is '' else int(threads.get())))
+        # btn_port.bind('<ButtonRelease>',
+        #               lambda x: scanstart(x, ipaddrs.get(), '1-1024' if ports.get() is '' else ports.get(),
+        #                                   port_result, 1 if threads.get() is '' else int(threads.get())))
+
+        btn_port_pause = Button(fm1, text='暂停')
+        btn_port_pause.pack(side=LEFT, expand=1)
+        btn_port_pause.bind('<ButtonRelease>', lambda x: pause_port(x, btn_port_pause))
+
+        btn_port_stop = Button(fm1, text='停止')
+        btn_port_stop.pack(side=LEFT, expand=1)
+        btn_port_stop.bind('<ButtonRelease>', lambda x: stop_port(x, btn_port, btn_port_pause))
 
         fm1.pack(side=TOP, fill=BOTH, pady=5)
 
@@ -102,9 +113,9 @@ class MainWindows:
                            insertwidth=3)
         port_result.pack(side=TOP, expand=1, fill=BOTH)
 
-    '''
-    Dir
-    '''
+        '''
+        Dir
+        '''
 
     def show_dir(self):
         frame_dir = LabelFrame(self.tab_dir, text='01Sec')
@@ -146,12 +157,24 @@ class MainWindows:
         time_left = StringVar()
         entry_time_left = Entry(fm_left_top, textvariable=time_left, width=1).pack(side=LEFT, expand=1, fill=X)
         time_left.set(3)
-        btn_crack = Button(fm_left_top, text='爆破')
+        btn_crack = Button(fm_left_top, text='爆破', command=lambda: dir_crack(domain.get(), int(threads_left.get()),
+                                                                             int(time_left.get()),
+                                                                             dirfile.get(),
+                                                                             tv_crack,
+                                                                             btn_crack))
         btn_crack.pack(side=LEFT, expand=1)
-        btn_crack.bind('<ButtonRelease>',
-                       lambda x: dir_crack(x, domain.get(), int(threads_left.get()), int(time_left.get()),
-                                           dirfile.get(),
-                                           tv_crack))
+        # btn_crack.bind('<ButtonRelease>',
+        #                lambda x: dir_crack(x, domain.get(), int(threads_left.get()), int(time_left.get()),
+        #                                    dirfile.get(),
+        #                                    tv_crack,btn_crack))
+
+        btn_crack_pause = Button(fm_left_top, text='暂停')
+        btn_crack_pause.pack(side=LEFT, expand=1)
+        btn_crack_pause.bind('<ButtonRelease>', lambda x: pause_crack(x, btn_crack_pause))
+
+        btn_crack_stop = Button(fm_left_top, text='停止')
+        btn_crack_stop.pack(side=LEFT, expand=1)
+        btn_crack_stop.bind('<ButtonRelease>', lambda x: stop_crack(x, btn_crack, btn_crack_pause))
 
         fm_right_top = Frame(frame_right)
         fm_right_top.pack(side=TOP, expand=0, fill=BOTH, pady=5)
