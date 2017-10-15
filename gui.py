@@ -298,7 +298,7 @@ class MainWindows:
         cbox_type['values'] = ('...', 'ssh', 'mysql', 'mssql', 'rdp', 'ftp')
         cbox_type.current(0)
         cbox_type.pack(side=LEFT, expand=1, fill=X)
-        cbox_type.bind('<<ComboboxSelected>>', lambda x: self.change_cbox(x, type.get(), ports))
+        cbox_type.bind('<<ComboboxSelected>>', lambda x: change_cbox(x, type.get(), ports))
 
         # 第三层 第二层里在进行布局
         # 输入框容器里在将控件整体分为两行
