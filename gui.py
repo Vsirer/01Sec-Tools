@@ -117,6 +117,10 @@ class MainWindows:
         Dir
         '''
 
+    '''
+    Dir
+    '''
+
     def show_dir(self):
         frame_dir = LabelFrame(self.tab_dir, text='01Sec')
         frame_dir.pack(expand=1, fill='both')
@@ -195,8 +199,6 @@ class MainWindows:
         tv_crack.column('resp', width=10, anchor=CENTER)
         tv_crack.heading('url', text='url')
         tv_crack.heading('resp', text='resp')
-        # tv_crack.insert('', END, value=('http://www.baidu.com', '403'))
-        # tv_crack.insert('', END, value=('http://www.zhihu.com', '200'))
         tv_crack.pack(side=TOP, expand=1, fill=BOTH)
         tv_crack.bind('<Double-Button-1>', lambda x: row_click(x, tv_crack))
         # c = a.get_children()
