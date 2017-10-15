@@ -11,6 +11,7 @@ from tkinter import messagebox
 from .util import *
 
 dirs = None
+_crack_len = 0
 
 _crack_flag = threading.Event()  # 用于暂停线程的标识
 _crack_flag.set()  # 将flag设置为True
@@ -19,7 +20,7 @@ _crack_running.set()  # 将running设置为True
 _crack_lock = threading.Lock()
 
 
-def dir_crack(domain, threads, time, dirfile, tv_crack, btn_crack):
+def dir_crack(domain, threads, time, dirfile, tv_crack, btn_crack, pbar_crack):
     if not domain:
         messagebox.showinfo('01Sec', 'input')
         return
@@ -32,17 +33,20 @@ def dir_crack(domain, threads, time, dirfile, tv_crack, btn_crack):
     items = tv_crack.get_children()
     [tv_crack.delete(item) for item in items]
     global dirs
-    dirs = get_dict(dirfile)
+    global _crack_len
     global _crack_flag
     global _crack_running
+    dirs = get_dict(dirfile)
     _crack_flag.set()
     _crack_running.set()
+    pbar_crack['maximum'] = dirs.qsize()
+    _crack_len = 0
     for i in range(threads):
-        t = threading.Thread(target=_start_crack, args=(domain, time, dirs, tv_crack,))
+        t = threading.Thread(target=_start_crack, args=(domain, time, dirs, tv_crack, pbar_crack))
         t.start()
 
 
-def _start_crack(domain, time, dirs, tv_crack):
+def _start_crack(domain, time, dirs, tv_crack, pbar_crack):
     while _crack_running.isSet():
         while not dirs.empty():
             try:
@@ -58,6 +62,12 @@ def _start_crack(domain, time, dirs, tv_crack):
             except Exception as e:
                 # print(e)
                 pass
+            finally:
+                if _crack_lock.acquire():
+                    global _crack_len
+                    _crack_len = _crack_len + 1
+                    pbar_crack['value'] = _crack_len
+                    _crack_lock.release()
 
 
 def pause_crack(event, btn_crack_pause):

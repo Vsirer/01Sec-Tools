@@ -32,6 +32,6 @@ def get_dir(tree, parent, loadfile):
 
 
 # 文件选择框
-def choose_file(self, event, filename):
+def choose_file(event, filename):
     name = filedialog.askopenfilename(filetypes=[("text file", "*.txt")])
     filename.set(name)

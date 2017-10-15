@@ -133,6 +133,10 @@ class MainWindows:
         fm2 = Frame(frame_dir)
         fm2.pack(side=TOP, expand=1, fill=BOTH)
 
+        # 最下面进度条
+        pbar_crack = ttk.Progressbar(frame_dir, mode="determinate")
+        pbar_crack.pack(side=TOP, expand=0, fill=X)
+
         # 上层控件
         Label(fm1, text='目标域名:').pack(side=LEFT, expand=1, fill=BOTH)
         domain = StringVar()
@@ -165,7 +169,7 @@ class MainWindows:
                                                                              int(time_left.get()),
                                                                              dirfile.get(),
                                                                              tv_crack,
-                                                                             btn_crack))
+                                                                             btn_crack, pbar_crack))
         btn_crack.pack(side=LEFT, expand=1)
         # btn_crack.bind('<ButtonRelease>',
         #                lambda x: dir_crack(x, domain.get(), int(threads_left.get()), int(time_left.get()),
@@ -203,12 +207,17 @@ class MainWindows:
         # btn_sprider_stop.bind('<ButtonRelease>', lambda x: stop_crack(x, btn_crack, btn_crack_pause))
 
         tv_crack = ttk.Treeview(frame_left, show="headings", columns=('url', 'resp'))
+        # 滚动条
+        ysb_crack = ttk.Scrollbar(frame_left, orient='vertical', command=tv_crack.yview)
+        ysb_crack.pack(side=RIGHT, fill=Y)
+        tv_crack.configure(yscroll=ysb_crack.set)
         tv_crack.column('url', width=320, anchor=W)
         tv_crack.column('resp', width=10, anchor=CENTER)
         tv_crack.heading('url', text='url')
         tv_crack.heading('resp', text='resp')
         tv_crack.pack(side=TOP, expand=1, fill=BOTH)
         tv_crack.bind('<Double-Button-1>', lambda x: row_click(x, tv_crack))
+
         # c = a.get_children()
         # for i in range(len(c)):
         #     a.item(c[i],tags=('ccc'))
@@ -235,6 +244,10 @@ class MainWindows:
 
 
         tv_sprider = ttk.Treeview(frame_right, show="headings", columns=('url', 'resp'))
+        # 滚动条
+        ysb_sprider = ttk.Scrollbar(frame_right, orient='vertical', command=tv_crack.yview)
+        ysb_sprider.pack(side=RIGHT, fill=Y)
+        tv_sprider.configure(yscroll=ysb_sprider.set)
         tv_sprider.column('url', width=320, anchor=W)
         tv_sprider.column('resp', width=10, anchor=CENTER)
         tv_sprider.heading('url', text='url')
@@ -343,11 +356,11 @@ class MainWindows:
         fm1.pack(side=LEFT, expand=0, fill=BOTH)
         tree_web = ttk.Treeview(fm1)
         # 滚动条
-        ysb = ttk.Scrollbar(fm1, orient='vertical', command=tree_web.yview)
-        ysb.pack(side=RIGHT, fill=Y)
+        ysb_tree = ttk.Scrollbar(fm1, orient='vertical', command=tree_web.yview)
+        ysb_tree.pack(side=RIGHT, fill=Y)
         # xsb = ttk.Scrollbar(fm1, orient='horizontal', command=tree_web.xview)
         # xsb.pack(side=BOTTOM,fill=X)
-        tree_web.configure(yscroll=ysb.set)  # , xscroll=xsb.set
+        tree_web.configure(yscroll=ysb_tree.set)  # , xscroll=xsb.set
         tree_web.heading('#0', text='Vnlu', anchor=CENTER)
         # 根结点
         loadfile = 'exploit/web'
