@@ -92,7 +92,7 @@ class MainWindows:
         btn_port = Button(fm1, text='扫描',
                           command=lambda: scanstart(ipaddrs.get(), '1-1024' if ports.get() is '' else ports.get(),
                                                     port_result, 1 if threads.get() is '' else int(threads.get()),
-                                                    btn_port))
+                                                    btn_port, pbar_port))
         btn_port.pack(side=LEFT, expand=1)
         # btn_port.bind('<ButtonRelease>',
         #               lambda x: scanstart(x, ipaddrs.get(), '1-1024' if ports.get() is '' else ports.get(),
@@ -108,10 +108,20 @@ class MainWindows:
 
         fm1.pack(side=TOP, fill=BOTH, pady=5)
 
+        fm2 = Frame(frame_port)
+        fm2.pack(side=TOP, expand=1, fill=BOTH)
         # 显示扫描结果
-        port_result = Text(frame_port, bg='black', fg='green', insertbackground='green', selectbackground='green',
+        port_result = Text(fm2, bg='black', fg='green', insertbackground='green', selectbackground='green',
                            insertwidth=3)
+        # 滚动条
+        ysb_port = ttk.Scrollbar(fm2, orient='vertical', command=port_result.yview)
+        ysb_port.pack(side=RIGHT, fill=Y)
+        port_result.configure(yscroll=ysb_port.set)
         port_result.pack(side=TOP, expand=1, fill=BOTH)
+
+        # 最下面进度条
+        pbar_port = ttk.Progressbar(frame_port, mode="determinate")
+        pbar_port.pack(side=TOP, expand=0, fill=X)
 
         '''
         Dir

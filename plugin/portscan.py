@@ -11,6 +11,7 @@ from tkinter import messagebox
 from tkinter import *
 
 q_ports = None
+_port_len = 0
 
 _port_flag = threading.Event()  # 用于暂停线程的标识
 _port_flag.set()  # 将flag设置为True
@@ -19,10 +20,10 @@ _port_running.set()  # 将running设置为True
 _port_lock = threading.Lock()
 
 
-def portscan(host, ports, port_result):
-    try:
-        while _port_running.isSet():
-            while not ports.empty():
+def portscan(host, ports, port_result, pbar_port):
+    while _port_running.isSet():
+        while not ports.empty():
+            try:
                 _port_flag.wait()
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # tcp
                 s.settimeout(2)
@@ -31,16 +32,23 @@ def portscan(host, ports, port_result):
                 if _port_lock.acquire():
                     if result == 0:
                         port_result.insert(END, "[*]" + host + ":" + str(port) + ">" * 20 + "Open\n")
-                    else:
-                        port_result.insert(END, "[*]" + host + ":" + str(port) + ">" * 20 + "Close\n")
+                    # else:
+                    #     port_result.insert(END, "[*]" + host + ":" + str(port) + ">" * 20 + "Close\n")
                     _port_lock.release()
                 s.close()
-    except Exception as e:
-        print("scan error")
-        print(e)
+            except Exception as e:
+                print("scan error")
+                print(e)
+                pass
+            finally:
+                if _port_lock.acquire():
+                    global _port_len
+                    _port_len = _port_len + 1
+                    pbar_port['value'] = _port_len
+                    _port_lock.release()
 
 
-def scanstart(host, ports, port_result, threads, btn_port):
+def scanstart(host, ports, port_result, threads, btn_port, pbar_port):
     try:
         if not host:
             messagebox.showinfo('01Sec', 'input')
@@ -63,13 +71,17 @@ def scanstart(host, ports, port_result, threads, btn_port):
 
         btn_port['state'] = DISABLED
         port_result.delete(0.0, END)
+
+        global _port_len
         global _port_flag
         global _port_running
         _port_flag.set()
         _port_running.set()
+        pbar_port['maximum'] = q_ports.qsize()
+        _port_len = 0
+
         for i in range(threads):
-            print(i)
-            x = threading.Thread(target=portscan, args=(host, q_ports, port_result))
+            x = threading.Thread(target=portscan, args=(host, q_ports, port_result, pbar_port))
             x.start()
     except Exception as e:
         print("scan done")
