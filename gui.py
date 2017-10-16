@@ -205,16 +205,18 @@ class MainWindows:
         time_right = StringVar()
         entry_time_right = Entry(fm_right_top, textvariable=time_right, width=1).pack(side=LEFT, expand=1, fill=X)
         time_right.set(3)
-        btn_sprider = Button(fm_right_top, text='爬取')
+        btn_sprider = Button(fm_right_top, text='爬取',
+                             command=lambda: dir_sprider(domain.get(), int(threads_right.get()), int(time_right.get()),
+                                                         tv_sprider, btn_sprider))
         btn_sprider.pack(side=LEFT, expand=1)
 
         btn_sprider_pause = Button(fm_right_top, text='暂停')
         btn_sprider_pause.pack(side=LEFT, expand=1)
-        # btn_sprider_pause.bind('<ButtonRelease>', lambda x: pause_crack(x, btn_crack_pause))
+        btn_sprider_pause.bind('<ButtonRelease>', lambda x: pause_sprider(x, btn_sprider_pause))
 
         btn_sprider_stop = Button(fm_right_top, text='停止')
         btn_sprider_stop.pack(side=LEFT, expand=1)
-        # btn_sprider_stop.bind('<ButtonRelease>', lambda x: stop_crack(x, btn_crack, btn_crack_pause))
+        btn_sprider_stop.bind('<ButtonRelease>', lambda x: stop_sprider(x, btn_sprider, btn_sprider_pause))
 
         tv_crack = ttk.Treeview(frame_left, show="headings", columns=('url', 'resp'))
         # 滚动条
@@ -255,7 +257,7 @@ class MainWindows:
 
         tv_sprider = ttk.Treeview(frame_right, show="headings", columns=('url', 'resp'))
         # 滚动条
-        ysb_sprider = ttk.Scrollbar(frame_right, orient='vertical', command=tv_crack.yview)
+        ysb_sprider = ttk.Scrollbar(frame_right, orient='vertical', command=tv_sprider.yview)
         ysb_sprider.pack(side=RIGHT, fill=Y)
         tv_sprider.configure(yscroll=ysb_sprider.set)
         tv_sprider.column('url', width=320, anchor=W)
