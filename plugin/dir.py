@@ -184,7 +184,6 @@ def _read_url(hostname, opener, time, tv_sprider):
         while len(new_urls) != 0:
             _sprider_flag.wait()
             url = new_urls.pop()
-            print(url)
             old_urls.add(url)
             _get_urls(url, hostname, opener, time, tv_sprider)
 
@@ -207,12 +206,10 @@ def _get_urls(url, hostname, opener, timed, tv_sprider):
             # temp_urls.add(new_url)
             # for i in temp_urls:
             if new_url not in new_urls and new_url not in old_urls:
-                # print(new_url)
-                time.sleep(1)
+                # time.sleep(1)
                 new_urls.add(new_url)
                 tv_sprider.insert('', END, value=(new_url, o.code))
                 # new_url = urllib.parse.urljoin(url, link)
-                # # print(new_url)
                 # if hostname == urllib.parse.urlparse(new_url).hostname:
                 #     if new_url not in new_urls and new_url not in old_urls:
                 #         new_urls.add(new_url)

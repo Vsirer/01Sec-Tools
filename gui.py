@@ -16,6 +16,7 @@ from plugin.chatclient import *
 from plugin.crack import *
 from plugin.dir import *
 from plugin.webvuln import *
+from plugin.code import *
 
 
 # 主类
@@ -42,15 +43,17 @@ class MainWindows:
         self.tab_web = Frame(tabControl)
         self.tab_dir = Frame(tabControl)
         self.tab_crack = Frame(tabControl)
+        self.tab_code = Frame(tabControl)
         self.tab_chat = Frame(tabControl)
-        self.tab_music = Frame(tabControl)
+        # self.tab_music = Frame(tabControl)
         tabControl.add(self.tab_port, text='端口扫描')
         # tabControl.add(self.tab_vuln,text='VulnList')
         tabControl.add(self.tab_web, text='漏洞测试')
         tabControl.add(self.tab_dir, text='目录收集')
         tabControl.add(self.tab_crack, text='端口爆破')
+        tabControl.add(self.tab_code, text='编码解码')
         tabControl.add(self.tab_chat, text='在线聊天')
-        tabControl.add(self.tab_music, text='Music')
+        # tabControl.add(self.tab_music, text='Music')
         tabControl.pack(expand=1, fill='both')
 
         self.show_portscan()
@@ -58,6 +61,7 @@ class MainWindows:
         self.show_chat()
         self.show_crack()
         self.show_dir()
+        self.show_code()
 
         # self.root.config(menu=self.menuBar)
         self.root.protocol("WM_DELETE_WINDOW", self.close)
@@ -126,6 +130,39 @@ class MainWindows:
         '''
         Dir
         '''
+
+    '''
+    Code
+    '''
+
+    def show_code(self):
+        frame_code = LabelFrame(self.tab_code, text='01Sec')
+        frame_code.pack(expand=1, fill='both')
+
+        text_top = Text(frame_code, height=1, bg='black', fg='green', insertbackground='green',
+                        selectbackground='green',
+                        insertwidth=3)
+        text_top.pack(side=TOP, expand=1, fill=BOTH)
+        fm1 = Frame(frame_code)
+        fm1.pack(side=TOP, expand=0, fill=Y)
+        type_code = StringVar()
+        cbox_type = ttk.Combobox(fm1, textvariable=type_code, width=5)
+        cbox_type['values'] = ('...', 'url', 'base16', 'base32', 'base64', 'base85', 'unicode', 'hex')
+        cbox_type.current(0)
+        cbox_type.pack(side=LEFT, padx=10, pady=5, expand=1, fill=BOTH)
+
+        btn_encode = Button(fm1, text='编码')
+        btn_encode.pack(side=LEFT, padx=10, pady=5, expand=1, fill=BOTH)
+        btn_encode.bind('<ButtonRelease>', lambda x: encode(x, type_code.get(), text_top, text_bottom))
+
+        btn_decode = Button(fm1, text='解码')
+        btn_decode.pack(side=LEFT, padx=10, pady=5, expand=1, fill=BOTH)
+        btn_decode.bind('<ButtonRelease>', lambda x: decode(x, type_code.get(), text_top, text_bottom))
+
+        text_bottom = Text(frame_code, height=1, bg='black', fg='green', insertbackground='green',
+                           selectbackground='green',
+                           insertwidth=3)
+        text_bottom.pack(side=TOP, expand=1, fill=BOTH)
 
     '''
     Dir
@@ -264,8 +301,6 @@ class MainWindows:
         tv_sprider.column('resp', width=10, anchor=CENTER)
         tv_sprider.heading('url', text='url')
         tv_sprider.heading('resp', text='resp')
-        tv_sprider.insert('', END, value=('http://www.baidu.com', '403'))
-        tv_sprider.insert('', END, value=('http://www.zhihu.com', '200'))
         tv_sprider.pack(side=TOP, expand=1, fill=BOTH)
         tv_sprider.bind('<Double-Button-1>', lambda x: row_click(x, tv_sprider))
 
