@@ -55,7 +55,7 @@ c = '\\u53d1\\u751f\\u7684'.replace('\\\\', '\\')
 # a = b.encode('utf-8').decode()
 # print(type('\u554a'))
 # print(a)
-
+'''
 import os, urllib, configparser
 import base64
 import codecs
@@ -71,3 +71,12 @@ for i in cf:
     config.set(i, 'POST', a)
 config.write(open('exploit/web/struts2/s2-019.conf','w'))
 
+'''
+a = 'a'
+if a is not '':
+    print(1)
+
+head = {}
+head['a'] = 'b'
+head['b'] = 'c'
+print(head)
