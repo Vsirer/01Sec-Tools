@@ -26,7 +26,8 @@ def load_exp(event, tree_web, name, cms, text_path, text_post, method):
                 name.set(config.get(i, 'NAME', raw=True))
                 cms.set(config.get(i, 'CMS', raw=True))
                 text_path.delete(0.0, END)
-                text_path.insert(END, config.get(i, 'PATH', raw=True) + '\n')
+                temp_path = config.get(i, 'PATH', raw=True)
+                text_path.insert(END, base64.b64decode(temp_path.encode('utf-8')).decode() + '\n')
                 text_post.delete(0.0, END)
                 temp_post = config.get(i, 'POST', raw=True)
                 text_post.insert(END, base64.b64decode(temp_post.encode('utf-8')).decode() + '\n')
@@ -77,7 +78,7 @@ def update(event, text_path, text_post, method):
         config.read(exp_dir)
         cf = config.sections()
         for i in cf:
-            config.set(i, 'PATH', path)
+            config.set(i, 'PATH', base64.b64encode(path.encode('utf-8')).decode())
             config.set(i, 'POST', base64.b64encode(post.encode('utf-8')).decode())
             config.set(i, 'METHOD', method)
             config.write(open(exp_dir,'w'))
