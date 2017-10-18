@@ -459,7 +459,7 @@ class MainWindows:
         fm2_4 = Frame(fm2)
         fm2_4.pack(side=TOP, expand=1, fill=X, padx=5)
         # fm2_4.pack(side=TOP, padx=5, pady=3, expand=0, fill=BOTH)
-        Label(fm2_4, text='Post:').pack(side=LEFT)
+        Label(fm2_4, text='参数:').pack(side=LEFT)
         text_post = Text(fm2_4, width=1, height=8)
         text_post.pack(side=LEFT, expand=1, fill=BOTH)
 
@@ -467,7 +467,7 @@ class MainWindows:
         fm2_5 = Frame(fm2)
         fm2_5.pack(side=TOP, expand=1, fill=X, padx=5)
         # fm2_5.pack(side=TOP, padx=5, pady=3, expand=0, fill=BOTH)
-        Label(fm2_5, text='Cookie:').pack(side=LEFT)
+        Label(fm2_5, text='身份:').pack(side=LEFT)
         text_cookie = Text(fm2_5, width=1, height=4)
         text_cookie.pack(side=LEFT, expand=1, fill=BOTH)
 
