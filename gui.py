@@ -420,7 +420,7 @@ class MainWindows:
         # 布局
         tree_web.pack(side=LEFT, expand=0, fill=BOTH)
         # 绑定事件
-        tree_web.bind('<ButtonRelease>', lambda x: load_exp(x, tree_web, name, cms, text_path, text_post, method, code))
+        tree_web.bind('<ButtonRelease>', lambda x: load_exp(x, tree_web, name, cms, text_path, text_post, method))
 
         # 配置文件对应的设置控件 中间布局控件
         fm2 = Frame(frame_web)
@@ -433,7 +433,7 @@ class MainWindows:
         Label(fm2_1, text='名称:').pack(side=LEFT)
         name = StringVar()
         entry_name = Entry(fm2_1, width=16, textvariable=name).pack(side=LEFT, expand=1, fill=BOTH)
-        Label(fm2_1, text='CMS:').pack(side=LEFT)
+        Label(fm2_1, text='模块:').pack(side=LEFT)
         cms = StringVar()
         entry_cms = Entry(fm2_1, width=16, textvariable=cms).pack(side=LEFT, expand=1, fill=BOTH)
 
@@ -502,6 +502,9 @@ class MainWindows:
         # 修改当前exp
         btn_update = Button(fm2_7, text='更新')
         btn_update.pack(side=LEFT, expand=1)
+        btn_update.bind("<ButtonRelease>",
+                     lambda x: update(x, text_path, text_post, method))
+
         # 新增新exp
         btn_add = Button(fm2_7, text='新增')
         btn_add.pack(side=LEFT, expand=1)

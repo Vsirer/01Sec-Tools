@@ -5,19 +5,17 @@ Copyright (c) 2017-2017 01 Security Team
 GET AND POST
 """
 
-import os, urllib, configparser
+import os, urllib,base64, configparser
 from tkinter import *
 from tkinter import messagebox
 
-config = configparser.ConfigParser()
-config.read('testini.ini')
-cf = config.sections()
-for i in cf:
-    print(config.get(i, 'CMS'))
+
+exp_dir = ''
 
 
-def load_exp(event, tree_web, name, cms, text_path, text_post, method, code):
+def load_exp(event, tree_web, name, cms, text_path, text_post, method):
     try:
+        global exp_dir
         # 获取完整路径
         exp_dir = tree_web.getvar(tree_web.identify_row(event.y))
         if os.path.isfile(exp_dir):
@@ -30,9 +28,10 @@ def load_exp(event, tree_web, name, cms, text_path, text_post, method, code):
                 text_path.delete(0.0, END)
                 text_path.insert(END, config.get(i, 'PATH', raw=True) + '\n')
                 text_post.delete(0.0, END)
-                text_post.insert(END, config.get(i, 'POST', raw=True) + '\n')
+                temp_post = config.get(i, 'POST', raw=True)
+                text_post.insert(END, base64.b64decode(temp_post.encode('utf-8')).decode() + '\n')
                 method.set(config.get(i, 'METHOD', raw=True))
-                code.set(config.get(i, 'CODE', raw=True))
+                # code.set(config.get(i, 'CODE', raw=True))
     except Exception as e:
         print(e)
         pass
@@ -67,3 +66,22 @@ def exploit(event, url, text_path, text_post, text_cookie, method, code, text_re
     print('test')
 
     pass
+
+
+def update(event, text_path, text_post, method):
+    try:
+        path = text_path.get('1.0', END)
+        post = text_post.get('1.0', END)
+        method = method.get()
+        config = configparser.ConfigParser()
+        config.read(exp_dir)
+        cf = config.sections()
+        for i in cf:
+            config.set(i, 'PATH', path)
+            config.set(i, 'POST', base64.b64encode(post.encode('utf-8')).decode())
+            config.set(i, 'METHOD', method)
+            config.write(open(exp_dir,'w'))
+        messagebox.showinfo('01Sec', '修改成功')
+    except Exception as e:
+        print(e)
+        messagebox.showinfo('01Sec', '修改失败')
