@@ -5,10 +5,9 @@ Copyright (c) 2017-2017 01 Security Team
 GET AND POST
 """
 
-import os, urllib,base64, configparser
+import os, urllib.request, base64, configparser
 from tkinter import *
 from tkinter import messagebox
-
 
 exp_dir = ''
 
@@ -43,30 +42,38 @@ def exploit(event, url, text_path, text_post, text_cookie, method, code, text_re
     if not url:
         messagebox.showinfo('01Sec', 'input')
         return
-    path = text_path.get('1.0', END)
-    post = text_post.get('1.0', END)
-    cookie = text_cookie.get('1.0', END)
+    path = text_path.get('1.0', END).replace('\n', '')
+    post = text_post.get('1.0', END).replace('\n', '').encode('utf-8')
+    cookie = text_cookie.get('1.0', END).replace('\n', '')
     method = method.get()
     code = code.get()
 
-    # 构造请求
-    # path等于路径加上get参数
-    # 如果path不为空  请求加上path
-    # 如果post不为空 ...
-    # 如果cookie不为空
-    # 请求方式method
-    # code编码
+    headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:53.0) Gecko/20100101 Firefox/53.0'}
 
-    # 构造完成 发送请求
-
-    # 获取相应写入gui
-
-    # text_resp.delete(0.0, END)
-    # text_resp.insert(END, 响应+'\n')
-
-    print('test')
-
-    pass
+    if path:
+        if url[-1:] != '/':
+            exp_url = url + '/' + path
+        else:
+            exp_url = url + path
+    if cookie:
+        headers['Cookie'] = cookie
+    text_resp.delete(0.0, END)
+    if method == 'GET':
+        r = urllib.request.Request(exp_url, headers=headers)
+        req = urllib.request.urlopen(r)
+        text_resp.insert(END, str(req.headers) + '\n')
+        if code == 'UTF-8':
+            text_resp.insert(END, req.read().decode('utf-8') + '\n')
+        elif code == 'GBK':
+            text_resp.insert(END, req.read().decode('gb2312') + '\n')
+    elif method == 'POST':
+        r = urllib.request.Request(exp_url, data=post, headers=headers)
+        req = urllib.request.urlopen(r)
+        text_resp.insert(END, str(req.headers) + '\n')
+        if code == 'UTF-8':
+            text_resp.insert(END, req.read().decode('utf-8') + '\n')
+        elif code == 'GBK':
+            text_resp.insert(END, req.read().decode('gb2312') + '\n')
 
 
 def update(event, text_path, text_post, method):
@@ -81,8 +88,15 @@ def update(event, text_path, text_post, method):
             config.set(i, 'PATH', base64.b64encode(path.encode('utf-8')).decode())
             config.set(i, 'POST', base64.b64encode(post.encode('utf-8')).decode())
             config.set(i, 'METHOD', method)
-            config.write(open(exp_dir,'w'))
+            config.write(open(exp_dir, 'w'))
         messagebox.showinfo('01Sec', '修改成功')
     except Exception as e:
         print(e)
         messagebox.showinfo('01Sec', '修改失败')
+
+
+def save(event, ):
+    pass
+
+def cleaer(event,):
+    pass
