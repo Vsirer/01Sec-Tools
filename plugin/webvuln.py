@@ -118,6 +118,8 @@ def save(event, name, cms, method, text_path, text_post, tree_web, root_node, lo
         config.set('01Sec', 'method', method)
         config.set('01Sec', 'path', base64.b64encode(path.encode('utf-8')).decode())
         config.set('01Sec', 'post', base64.b64encode(post.encode('utf-8')).decode())
+        if not os.path.exists('exploit/web/' + cms):
+            os.makedirs('exploit/web/' + cms)
         global exp_dir
         exp_dir = 'exploit/web/' + cms + '/' + name + '.conf'
         config.write(open(exp_dir, 'w'))
