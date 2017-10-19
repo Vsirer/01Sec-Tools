@@ -73,7 +73,7 @@ def get_dir(tree, parent, loadfile):
         # 构建路径
         path = os.path.join(loadfile, p)
         isdir = os.path.isdir(path)
-        oid = tree.insert(parent, END, p, text=p, open=False)
+        oid = tree.insert(parent, END, p, text=p, open=True)
         tree.setvar(p, path)
         if isdir:
             get_dir(tree, oid, path)

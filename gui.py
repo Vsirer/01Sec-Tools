@@ -38,30 +38,31 @@ class MainWindows:
         tab
         '''
         tabControl = ttk.Notebook(self.root)
-        self.tab_port = Frame(tabControl)
-        # self.tab_vuln = Frame(tabControl)
         self.tab_web = Frame(tabControl)
         self.tab_dir = Frame(tabControl)
+        self.tab_port = Frame(tabControl)
+        # self.tab_vuln = Frame(tabControl)
         self.tab_crack = Frame(tabControl)
         self.tab_code = Frame(tabControl)
         self.tab_chat = Frame(tabControl)
         # self.tab_music = Frame(tabControl)
-        tabControl.add(self.tab_port, text='端口扫描')
-        # tabControl.add(self.tab_vuln,text='VulnList')
+
         tabControl.add(self.tab_web, text='漏洞测试')
         tabControl.add(self.tab_dir, text='目录收集')
+        tabControl.add(self.tab_port, text='端口扫描')
+        # tabControl.add(self.tab_vuln,text='VulnList')
         tabControl.add(self.tab_crack, text='端口爆破')
         tabControl.add(self.tab_code, text='编码解码')
         tabControl.add(self.tab_chat, text='在线聊天')
         # tabControl.add(self.tab_music, text='Music')
         tabControl.pack(expand=1, fill='both')
 
-        self.show_portscan()
         self.show_webvuln()
-        self.show_chat()
-        self.show_crack()
         self.show_dir()
+        self.show_portscan()
+        self.show_crack()
         self.show_code()
+        self.show_chat()
 
         # self.root.config(menu=self.menuBar)
         self.root.protocol("WM_DELETE_WINDOW", self.close)
@@ -146,7 +147,7 @@ class MainWindows:
         fm1 = Frame(frame_code)
         fm1.pack(side=TOP, expand=0, fill=Y)
         type_code = StringVar()
-        cbox_type = ttk.Combobox(fm1, textvariable=type_code, width=5)
+        cbox_type = ttk.Combobox(fm1, textvariable=type_code, width=7)
         cbox_type['values'] = ('...', 'url', 'base16', 'base32', 'base64', 'base85', 'unicode', 'hex')
         cbox_type.current(0)
         cbox_type.pack(side=LEFT, padx=10, pady=5, expand=1, fill=BOTH)
@@ -503,17 +504,19 @@ class MainWindows:
         btn_update = Button(fm2_7, text='更新')
         btn_update.pack(side=LEFT, expand=1)
         btn_update.bind("<ButtonRelease>",
-                     lambda x: update(x, text_path, text_post, method))
+                        lambda x: update(x, text_path, text_post, method))
 
         # 新增新exp
         btn_add = Button(fm2_7, text='新增')
         btn_add.pack(side=LEFT, expand=1)
         btn_add.bind("<ButtonRelease>",
-                        lambda x: save(x, name,cms,method,text_path,text_post))
+                     lambda x: save(x, name, cms, method, text_path, text_post, tree_web, root_node, loadfile))
 
         # 清空控件内容
         btn_clear = Button(fm2_7, text='清空')
         btn_clear.pack(side=LEFT, expand=1)
+        btn_clear.bind("<ButtonRelease>",
+                       lambda x: clear(x, name, cms, url, text_path, text_post, text_cookie, method, code))
 
         # 右边布局控件
         fm3 = Frame(frame_web)
@@ -606,7 +609,7 @@ class MainWindows:
         # 登出
         btn_logout = Button(fm1, text='登出')
         btn_logout.pack(side=LEFT, expand=1)
-        btn_logout.bind("<ButtonRelease>",lambda x:logout_server(x,chat_result))
+        btn_logout.bind("<ButtonRelease>", lambda x: logout_server(x, chat_result))
         # 发送
         btn_send = Button(fm3_2, text='发送')
         btn_send.pack(side=TOP, expand=1)
