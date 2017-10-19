@@ -508,6 +508,9 @@ class MainWindows:
         # 新增新exp
         btn_add = Button(fm2_7, text='新增')
         btn_add.pack(side=LEFT, expand=1)
+        btn_add.bind("<ButtonRelease>",
+                        lambda x: save(x, name,cms,method,text_path,text_post))
+
         # 清空控件内容
         btn_clear = Button(fm2_7, text='清空')
         btn_clear.pack(side=LEFT, expand=1)

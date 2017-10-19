@@ -52,14 +52,14 @@ def exploit(event, url, text_path, text_post, text_cookie, method, code, text_re
 
     if path:
         if url[-1:] != '/':
-            exp_url = url + '/' + path
+            url = url + '/' + path
         else:
-            exp_url = url + path
+            url = url + path
     if cookie:
         headers['Cookie'] = cookie
     text_resp.delete(0.0, END)
     if method == 'GET':
-        r = urllib.request.Request(exp_url, headers=headers)
+        r = urllib.request.Request(url, headers=headers)
         req = urllib.request.urlopen(r)
         text_resp.insert(END, str(req.headers) + '\n')
         if code == 'UTF-8':
@@ -67,19 +67,19 @@ def exploit(event, url, text_path, text_post, text_cookie, method, code, text_re
         elif code == 'GBK':
             text_resp.insert(END, req.read().decode('gb2312') + '\n')
     elif method == 'POST':
-        r = urllib.request.Request(exp_url, data=post, headers=headers)
+        r = urllib.request.Request(url, data=post, headers=headers)
         req = urllib.request.urlopen(r)
         text_resp.insert(END, str(req.headers) + '\n')
         if code == 'UTF-8':
             text_resp.insert(END, req.read().decode('utf-8') + '\n')
         elif code == 'GBK':
-            text_resp.insert(END, req.read().decode('gb2312') + '\n')
+            text_resp.insert(END, req.read().decode('gb18030') + '\n')
 
 
 def update(event, text_path, text_post, method):
     try:
-        path = text_path.get('1.0', END)
-        post = text_post.get('1.0', END)
+        path = text_path.get('1.0', END).replace('\n', '')
+        post = text_post.get('1.0', END).replace('\n', '')
         method = method.get()
         config = configparser.ConfigParser()
         config.read(exp_dir)
@@ -95,8 +95,24 @@ def update(event, text_path, text_post, method):
         messagebox.showinfo('01Sec', '修改失败')
 
 
-def save(event, ):
+def save(event, name, cms, method, text_path, text_post):
+    try:
+        name = name.get()
+        if not name:
+            messagebox.showinfo('01Sec', 'input')
+            return
+        cms = cms.get()
+        if not cms:
+            messagebox.showinfo('01Sec', 'input')
+            return
+        method = method.get()
+        path = text_path.get('1.0', END).replace('\n', '')
+        post = text_post.get('1.0', END).replace('\n', '')
+
+    except:
+        messagebox.showinfo('01Sec', '新增失败')
     pass
 
-def cleaer(event,):
+
+def cleaer(event, ):
     pass

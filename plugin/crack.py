@@ -64,3 +64,16 @@ def crack_mysql(host, port, name, pwd):
 
 def crack_mssql(host, port):
     pass
+
+
+def crack_ftp(event, ipaddrs, port, name, pwd, crack_result):
+    ftp = FTP()
+    try:
+        ftp.connect(str(ipaddrs), int(port), 5)
+        ftp.login(str(name), str(pwd))
+        ftp.retrlines('ls')
+        ftp.quit()
+        result = '[*]INFO：爆破成功' + '>' * 20 + '用户名为：' + str(name) + '  ' + '密码为：' + str(pwd)
+        crack_result.insert(END, result + '\n')
+    except Exception as e:
+        print(e)
