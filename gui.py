@@ -606,6 +606,7 @@ class MainWindows:
         # 登出
         btn_logout = Button(fm1, text='登出')
         btn_logout.pack(side=LEFT, expand=1)
+        btn_logout.bind("<ButtonRelease>",lambda x:logout_server(x,chat_result))
         # 发送
         btn_send = Button(fm3_2, text='发送')
         btn_send.pack(side=TOP, expand=1)

@@ -37,40 +37,27 @@ def tellOthers(exceptNum, whatToSay):
 
 
 def subThreadIn(myconnection, connNumber):
-    try:
-        nickname = myconnection.recv(Buf).decode()  # 获取名字
-        mydict[myconnection.fileno()] = nickname
-        mylist.append(myconnection)
-    except ConnectionError as e:
-        print(e)
+    nickname = myconnection.recv(Buf).decode()  # 获取名字
+    mydict[myconnection.fileno()] = nickname
+    mylist.append(myconnection)
     # print('[*]' + 'INFO' + ':' + int(connNumber) + ' Has Name :', str(nickname))
     # tellOthers(connNumber, '[*]' + 'INFO' + ':' + mydict[connNumber] + ' ' + 'Join In The Server')
     while True:
         try:
-            recvedMsg = myconnection.recv(Buf).decode()  # 接收消息
-            print(recvedMsg)
+            recvedMsg = myconnection.recv(Buf).decode()
             if recvedMsg:
-                # print(mydict[connNumber], ':', recvedMsg)
+                print(mydict[connNumber], ':', recvedMsg)
                 tellOthers(connNumber, mydict[connNumber] + ' :' + recvedMsg)
-                # if
-            '''
-            elif recvedMsg == b'0':
-                print('close')
-                connection.close()
-            '''
 
         except (OSError, ConnectionResetError):
             try:
                 mylist.remove(myconnection)
             except:
                 pass
-                # sock.send(b'')
-                # sock.close()
-                # return
-                # print(mydict[connNumber], '[*]' + 'INFO' + ':' + len(mylist) + 'Left')
-                # tellOthers(connNumber, '[*]' + 'INFO' + ':' + mydict[connNumber] + 'Left')
-    myconnection.close()
-    return
+            # print(mydict[connNumber], '[*]' + 'INFO' + ':' + len(mylist) + 'Left')
+            # tellOthers(connNumber, '[*]' + 'INFO' + ':' + mydict[connNumber] + 'Left')
+            myconnection.close()
+            return
 
 
 while True:
@@ -79,7 +66,6 @@ while True:
     try:
         # connection.settimeout(5)
         buf = connection.recv(Buf).decode()
-        print(type(buf))
         if buf == '1':
             connection.send(b'[*] INFO: Welcome Logging In Server')  # btyes类型
 
@@ -88,9 +74,6 @@ while True:
             mythread.setDaemon(True)  # 守护进程
             mythread.start()
 
-            # elif buf[-1:] == '0':
-            # print('close')
-            # connection.shutdown(socket.SHUT_RDWR)
         else:
             connection.send(b'[*] INFO: Please Logging Out')
             connection.close()
