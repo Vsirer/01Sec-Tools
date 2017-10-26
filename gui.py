@@ -330,7 +330,7 @@ class MainWindows:
         fm1_2.pack(side=LEFT, expand=1, fill=BOTH)
 
         # 按钮布局容器 右
-        fm1_3 = Frame(fm1, padx=18)
+        fm1_3 = Frame(fm1, padx=6)
         fm1_3.pack(side=LEFT, expand=0, fill=BOTH)
 
         # 下拉框
@@ -375,18 +375,18 @@ class MainWindows:
                            command=lambda: crack_port(type.get(), ipaddrs.get(), ports.get(), int(threads.get()),
                                                       name.get(),
                                                       filename.get(), btn_crack, crack_result, pbar_crack))
-        btn_crack.pack(side=TOP, expand=1)
+        btn_crack.pack(side=LEFT, padx=3, expand=1)
         # btn_crack.pack(side=TOP, expand=1)
         # btn_crack.bind('<ButtonRelease>',
         #                lambda x: crack_port(x, type.get(), ipaddrs.get(), ports.get(), int(threads.get()), name.get(),
         #                                     filename.get(), crack_result,pbar_crack))
 
         btn_crack_pause = Button(fm1_3, text='暂停')
-        btn_crack_pause.pack(side=TOP, expand=1)
+        btn_crack_pause.pack(side=LEFT, padx=3, expand=1)
         btn_crack_pause.bind('<ButtonRelease>', lambda x: pause_port_crack(x, btn_crack_pause))
 
         btn_crack_stop = Button(fm1_3, text='停止')
-        btn_crack_stop.pack(side=TOP, expand=1)
+        btn_crack_stop.pack(side=LEFT, padx=3, expand=1)
         btn_crack_stop.bind('<ButtonRelease>', lambda x: stop_port_crack(x, btn_crack, btn_crack_pause))
 
         fm1.pack(side=TOP, expand=0, fill=BOTH)
