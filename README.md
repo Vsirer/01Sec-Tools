@@ -3,6 +3,6 @@ Hello World!
 
 Python3.x!
 
-mac linux windows
+Mac Linux Windows
 
-usage: python main.py
+Usage: python main.py
