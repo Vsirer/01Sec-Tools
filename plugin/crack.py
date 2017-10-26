@@ -57,9 +57,9 @@ def crack_port(type, ipaddrs, ports, threads, name, filename, btn_crack, crack_r
         for i in range(threads):
             t = threading.Thread(target=crack_ftp, args=(ipaddrs, ports, name, q_pwds, crack_result, pbar_crack))
             t.start()
-    elif type == 'mysql':
-        for i in range(threads):
-            t = threading.Thread()
+    # elif type == 'mysql':
+    #     for i in range(threads):
+    #         t = threading.Thread()
     else:
         return
 
