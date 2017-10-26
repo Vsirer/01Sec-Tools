@@ -26,7 +26,7 @@ class MainWindows:
         self.root.title("01Sec Tools v0.1.1")
         # self.root.attributes('-alpha', 0.8)
         # self.root.geometry("580x450")
-        self.root.iconbitmap('favicon.ico')
+        # self.root.iconbitmap('favicon.ico')
 
         '''
         menu
@@ -368,11 +368,23 @@ class MainWindows:
         entry_file.bind('<ButtonRelease>', lambda x: choose_file(x, filename))
 
         # 按钮绑定事件
-        btn_crack = Button(fm1_3, text='爆破')
-        btn_crack.pack(side=LEFT, expand=1)
-        btn_crack.bind('<ButtonRelease>',
-                       lambda x: crack_port(x, type.get(), ipaddrs.get(), ports.get(), threads.get(), name.get(),
-                                            filename.get(), crack_result))
+        btn_crack = Button(fm1_3, text='爆破',
+                           command=lambda: crack_port(type.get(), ipaddrs.get(), ports.get(), int(threads.get()),
+                                                      name.get(),
+                                                      filename.get(), btn_crack, crack_result, pbar_crack))
+        btn_crack.pack(side=TOP, expand=1)
+        # btn_crack.pack(side=TOP, expand=1)
+        # btn_crack.bind('<ButtonRelease>',
+        #                lambda x: crack_port(x, type.get(), ipaddrs.get(), ports.get(), int(threads.get()), name.get(),
+        #                                     filename.get(), crack_result,pbar_crack))
+
+        btn_crack_pause = Button(fm1_3, text='暂停')
+        btn_crack_pause.pack(side=TOP, expand=1)
+        btn_crack_pause.bind('<ButtonRelease>', lambda x: pause_port_crack(x, btn_crack_pause))
+
+        btn_crack_stop = Button(fm1_3, text='停止')
+        btn_crack_stop.pack(side=TOP, expand=1)
+        btn_crack_stop.bind('<ButtonRelease>', lambda x: stop_port_crack(x, btn_crack, btn_crack_pause))
 
         fm1.pack(side=TOP, expand=0, fill=BOTH)
 
@@ -380,6 +392,10 @@ class MainWindows:
         crack_result = Text(frame_crack, bg='black', fg='green', insertbackground='green', selectbackground='green',
                             insertwidth=3)
         crack_result.pack(side=TOP, expand=1, fill=BOTH)
+
+        # 最下面进度条
+        pbar_crack = ttk.Progressbar(frame_crack, mode="determinate")
+        pbar_crack.pack(side=TOP, expand=0, fill=X)
 
     '''
     WebVuln
