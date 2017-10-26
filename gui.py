@@ -46,6 +46,7 @@ class MainWindows:
         self.tab_code = Frame(tabControl)
         self.tab_chat = Frame(tabControl)
         # self.tab_music = Frame(tabControl)
+        self.tab_explain = Frame(tabControl)
 
         tabControl.add(self.tab_web, text='漏洞测试')
         tabControl.add(self.tab_dir, text='目录收集')
@@ -55,6 +56,7 @@ class MainWindows:
         tabControl.add(self.tab_code, text='编码解码')
         tabControl.add(self.tab_chat, text='在线聊天')
         # tabControl.add(self.tab_music, text='Music')
+        tabControl.add(self.tab_explain, text='说明')
         tabControl.pack(expand=1, fill='both')
 
         self.show_webvuln()
@@ -63,6 +65,7 @@ class MainWindows:
         self.show_crack()
         self.show_code()
         self.show_chat()
+        self.show_explain()
 
         # self.root.config(menu=self.menuBar)
         self.root.protocol("WM_DELETE_WINDOW", self.close)
@@ -643,6 +646,23 @@ class MainWindows:
         fm3.pack(side=TOP, expand=0, fill=X)
         chat_msg.pack(side=LEFT, expand=1, fill=BOTH)
         fm3_2.pack(side=LEFT, expand=0, fill=BOTH)
+
+    '''
+    Explain
+    '''
+
+    def show_explain(self):
+        frame_explain = LabelFrame(self.tab_explain, text='01Sec')
+        frame_explain.pack(expand=1, fill='both')
+
+        text_explain = Text(frame_explain, height=8, bg='black', fg='green', insertbackground='green',
+                            selectbackground='green',
+                            insertwidth=3)
+        text_explain.pack(expand=1, fill=BOTH)
+
+        text_explain.insert(END, '\n  0x00 退出程序前先点击停止按钮,将各功能线程退出\n\n')
+        text_explain.insert(END, '  0x01 交流群：553724737\n\n')
+        text_explain.insert(END, '  0x02 程序仅供学习\n\n')
 
     '''
     def 01Secwindow(self, window):
