@@ -600,7 +600,7 @@ class MainWindows:
         Label(fm1, text='Server IP:').pack(side=LEFT, expand=1, fill=BOTH)
         IP_addr = StringVar()
         entry_ip = Entry(fm1, textvariable=IP_addr).pack(side=LEFT, expand=1, fill=BOTH)
-        IP_addr.set('192.168.0.102')
+        # IP_addr.set('192.168.0.102')
         Label(fm1, text='Server Port:').pack(side=LEFT, expand=1, fill=BOTH)
         Port_num = StringVar()
         entry_port = Entry(fm1, textvariable=Port_num).pack(side=LEFT, expand=1, fill=BOTH)
