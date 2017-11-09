@@ -100,7 +100,7 @@ def _start_crack(domain, time, dirs, tv_crack, pbar_crack):
                 _crack_flag.wait()
                 url = domain + dirs.get()
                 req = urllib.request.Request(url,headers=headers)
-                req.get_method = lambda: 'HEAD'
+                # req.get_method = lambda: 'HEAD'
                 resp_code = urllib.request.urlopen(req, timeout=time).code
                 if resp_code is 200 or resp_code is 403 or resp_code is 302:
                     if _crack_lock.acquire():
