@@ -55,8 +55,6 @@ def portscan(host, ports, port_result, pbar_port):
                     _port_lock.release()
                 s.close()
             except Exception as e:
-                print("scan error")
-                print(e)
                 pass
             finally:
                 if _port_lock.acquire():
