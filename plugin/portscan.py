@@ -44,8 +44,9 @@ def portscan(host, ports, port_result, pbar_port):
                                 if res:
                                     port_result.insert(END, res[0][-1] + '\n')
                                 else:
-                                    if 'MySQL' in banner.decode('utf-8','ignore'):
-                                        banner = banner.decode('utf-8', 'ignore')[51:]
+                                    if 'MySQL' in banner.decode('utf-8', 'ignore'):
+                                        banner = banner.decode('utf-8', 'ignore')[
+                                                 banner.decode('utf-8', 'ignore').find('MySQL') - 1:]
                                     else:
                                         banner = banner.decode('utf-8')
                                     port_result.insert(END, banner + '\n')
