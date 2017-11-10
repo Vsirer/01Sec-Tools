@@ -39,7 +39,6 @@ def portscan(host, ports, port_result, pbar_port):
                             # print(type(banner))  #bytes
                             r = banner.decode('utf-8', 'ignore')
                             res = re.findall(r"(Server:(.*?)\r\n)", r, re.I | re.S | re.M)
-                            print(res)
                             port_result.insert(END, "[*]" + host + ":" + str(port) + ">" * 20 + "Open\n")
                             if banner:
                                 if res:
@@ -51,7 +50,7 @@ def portscan(host, ports, port_result, pbar_port):
                                         banner = banner.decode('utf-8')
                                     port_result.insert(END, banner + '\n')
                         except Exception as m:
-                            print(m)
+                            pass
                     _port_lock.release()
                 s.close()
             except Exception as e:
