@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 """
-Copyright (c) 2017-2017 01 Security Team
+Copyright (c) 2017 01 Security Team
 """
 
 __product__ = "1-65535 tcp scan"
 
-import socket, time, threading, queue
+import socket, time, threading, queue, re
 from tkinter import messagebox
 from tkinter import *
 
@@ -29,11 +29,29 @@ def portscan(host, ports, port_result, pbar_port):
                 s.settimeout(2)
                 port = ports.get()
                 result = s.connect_ex((host, int(port)))
+                # print(result)
                 if _port_lock.acquire():
                     if result == 0:
-                        port_result.insert(END, "[*]" + host + ":" + str(port) + ">" * 20 + "Open\n")
-                    # else:
-                    #     port_result.insert(END, "[*]" + host + ":" + str(port) + ">" * 20 + "Close\n")
+                        try:
+                            senddata = 'GET / HTTP/1.1\r\nHost:%s\r\nUser-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.125 Safari/537.36\r\nAccept: */*\r\n\r\n' % host
+                            s.send(bytes(senddata, encoding='utf-8'))
+                            banner = s.recv(150)
+                            # print(type(banner))  #bytes
+                            r = banner.decode('utf-8', 'ignore')
+                            res = re.findall(r"(Server:(.*?)\r\n)", r, re.I | re.S | re.M)
+                            print(res)
+                            port_result.insert(END, "[*]" + host + ":" + str(port) + ">" * 20 + "Open\n")
+                            if banner:
+                                if res:
+                                    port_result.insert(END, res[0][-1] + '\n')
+                                else:
+                                    if 'MySQL' in banner.decode('utf-8','ignore'):
+                                        banner = banner.decode('utf-8', 'ignore')[51:]
+                                    else:
+                                        banner = banner.decode('utf-8')
+                                    port_result.insert(END, banner + '\n')
+                        except Exception as m:
+                            print(m)
                     _port_lock.release()
                 s.close()
             except Exception as e:
