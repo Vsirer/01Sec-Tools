@@ -4,9 +4,9 @@
 Copyright (c) 2017-2017 01 Security Team
 """
 
-import re, os, queue, random
-import urllib
-import http.cookiejar
+import os, queue, random
+# import urllib
+# import http.cookiejar
 from tkinter import *
 from tkinter import filedialog
 
