@@ -60,9 +60,9 @@ headers = {
 # 获取字典
 def get_dict(filename):
     q_crack = queue.Queue()
-    with open(filename) as f:
+    with open(filename, 'rb') as f:
         for i in f.readlines():
-            q_crack.put(i)
+            q_crack.put(i.decode())
     return q_crack
 
 
