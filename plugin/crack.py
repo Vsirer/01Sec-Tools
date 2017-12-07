@@ -11,6 +11,7 @@ from .util import *
 
 import tkinter.messagebox
 from ftplib import FTP
+import telnetlib
 
 q_pwds = None
 _crack_len = 0
@@ -34,6 +35,8 @@ def change_cbox(event, type, ports):
         ports.set(21)
     elif type == 'rdp':
         ports.set(3389)
+    elif type == 'telnet':
+        ports.set(23)
     else:
         return
 
@@ -69,6 +72,17 @@ def crack_port(type, ipaddrs, ports, threads, name, filename, btn_crack, crack_r
         crack_result.delete('0.0', END)
         for i in range(threads):
             t = threading.Thread(target=crack_mysql, args=(ipaddrs, ports, name, q_pwds, crack_result, pbar_crack))
+            t.start()
+    elif type == 'telnet':
+        q_pwds = get_dict(filename)
+        _crack_flag.set()
+        _crack_running.set()
+        pbar_crack['maximum'] = q_pwds.qsize()
+        _crack_len = 0
+        btn_crack['state'] = DISABLED
+        crack_result.delete('0.0', END)
+        for i in range(threads):
+            t = threading.Thread(target=crack_telnet, args=(ipaddrs, ports, name, q_pwds, crack_result, pbar_crack))
             t.start()
     elif type == 'ssh':
         try:
@@ -183,6 +197,74 @@ def crack_mssql(ipaddrs, port, name, pwd, crack_result, pbar_crack):
                 result = '[*]INFO：爆破成功' + '>' * 20 + '用户名为：' + name + '  ' + '密码为：' + temp_pwd
                 crack_result.insert(END, result + '\n')
                 return
+            except Exception as e:
+                print(e)
+                pass
+            finally:
+                if _crack_lock.acquire():
+                    global _crack_len
+                    _crack_len = _crack_len + 1
+                    pbar_crack['value'] = _crack_len
+                    _crack_lock.release()
+
+
+def crack_telnet(ipaddrs, port, name, pwd, crack_result, pbar_crack):
+    while _crack_running.isSet():
+        while not pwd.empty():
+            try:
+                _crack_flag.wait()
+                temp_pwd = pwd.get().replace('\n', '')
+
+                try:
+                    tn = telnetlib.Telnet(ipaddrs, int(port), 5)
+                    # tn.set_debuglevel(3)
+                    time.sleep(0.5)
+                    os = tn.read_some()
+                except Exception as e:
+                    return
+                user_match = b"(?i)(login|user|username)"
+                pass_match = b'(?i)(password|pass)'
+                login_match = b'#|\$|>'
+                if re.search(user_match, os):
+                    try:
+                        tn.write(name.encode() + b'\r\n')
+                        tn.read_until(pass_match, timeout=1)
+                        tn.write(temp_pwd.encode() + b'\r\n')
+                        login_info = tn.read_until(login_match, timeout=2)
+                        tn.close()
+                        if re.search(login_match, login_info):
+                            result = '[*]INFO：爆破成功' + '>' * 20 + '用户名为：' + name + '  ' + '密码为：' + temp_pwd
+                            crack_result.insert(END, result + '\n')
+                            return
+                    except Exception as e:
+                        pass
+                else:
+                    try:
+                        info = tn.read_until(user_match, timeout=1)
+                    except Exception as e:
+                        return
+                    if re.search(user_match, info):
+                        try:
+                            tn.write(name.encode() + b'\r\n')
+                            tn.read_until(pass_match, timeout=1)
+                            tn.write(temp_pwd.encode() + b'\r\n')
+                            login_info = tn.read_until(login_match, timeout=2)
+                            tn.close()
+                            if re.search(login_match, login_info):
+                                result = '[*]INFO：爆破成功' + '>' * 20 + '用户名为：' + name + '  ' + '密码为：' + temp_pwd
+                                crack_result.insert(END, result + '\n')
+                                return
+                        except Exception as e:
+                            return
+                    elif re.search(pass_match, info):
+                        tn.read_until(pass_match, timeout=1)
+                        tn.write(temp_pwd.encode() + b'\r\n')
+                        login_info = tn.read_until(login_match, timeout=2)
+                        tn.close()
+                        if re.search(login_match, login_info):
+                            result = '[*]INFO：爆破成功' + '>' * 20 + '密码为：' + temp_pwd
+                            crack_result.insert(END, result + '\n')
+                            return
             except Exception as e:
                 print(e)
                 pass
