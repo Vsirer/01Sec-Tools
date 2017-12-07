@@ -5,7 +5,8 @@ Copyright (c) 2017 01 Security Team
 Its Support Mysql、Mssql、ssh
 """
 
-import time, queue, threading
+import time, socket, queue, threading
+import struct, hashlib
 from .util import *
 
 import tkinter.messagebox
@@ -59,12 +60,6 @@ def crack_port(type, ipaddrs, ports, threads, name, filename, btn_crack, crack_r
             t = threading.Thread(target=crack_ftp, args=(ipaddrs, ports, name, q_pwds, crack_result, pbar_crack))
             t.start()
     elif type == 'mysql':
-        try:
-            global pymysql
-            import pymysql
-        except:
-            tkinter.messagebox.showinfo('01sec', '需安装pymysql模块')
-            return
         q_pwds = get_dict(filename)
         _crack_flag.set()
         _crack_running.set()
@@ -145,11 +140,27 @@ def crack_mysql(ipaddrs, port, name, pwd, crack_result, pbar_crack):
             try:
                 _crack_flag.wait()
                 temp_pwd = pwd.get().replace('\n', '')
-                db = pymysql.connect(str(ipaddrs), int(port), name, temp_pwd)
-                db.close()
-                result = '[*]INFO：爆破成功' + '>' * 20 + '用户名为：' + name + '  ' + '密码为：' + temp_pwd
-                crack_result.insert(END, result + '\n')
-                return
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.connect((ipaddrs, int(port)))
+                packet = sock.recv(254)  # .decode('utf-8','replace')
+                plugin, scramble = get_scramble(packet)
+                if not scramble: return
+                auth_data = get_auth_data(name, temp_pwd, scramble, plugin)
+                sock.send(auth_data)
+                result = sock.recv(1024)
+                sock.close()
+                if result == b'\x07\x00\x00\x02\x00\x00\x00\x02\x00\x00\x00':
+                    result = '[*]INFO：爆破成功' + '>' * 20 + '用户名为：' + name + '  ' + '密码为：' + temp_pwd
+                    crack_result.insert(END, result + '\n')
+                    return
+
+
+
+                    # db = pymysql.connect(host=str(ipaddrs), port=int(port), user=name, password=temp_pwd)
+                    # db.close()
+                    # result = '[*]INFO：爆破成功' + '>' * 20 + '用户名为：' + name + '  ' + '密码为：' + temp_pwd
+                    # crack_result.insert(END, result + '\n')
+                    # return
             except Exception as e:
                 print(e)
                 pass
@@ -233,3 +244,64 @@ def stop_port_crack(event, btn_crack, btn_crack_pause):
     _crack_running.clear()  # 设置为False
     btn_crack['state'] = NORMAL
     btn_crack_pause['text'] = '暂停'
+
+
+def get_scramble(packet):
+    scramble, plugin = b'', b''
+    try:
+        tmp = packet[15:]
+        m = re.findall(b"\x00?([\x01-\x7F]{7,})\x00", tmp)
+        if len(m) > 3: del m[0]
+        scramble = m[0] + m[1]
+    except Exception as e:
+        print(e)
+        return '', ''
+    try:
+        plugin = m[2]
+    except:
+        pass
+    return plugin, scramble
+
+
+def get_auth_data(user, password, scramble, plugin):
+    user_hex = user.encode()
+    pass_hex = get_hash(password, scramble)
+    data = b'\x05\xa2+\x00\x01\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' + user_hex + b'\0'
+    data += lenenc_int(len(pass_hex)) + pass_hex
+    data += plugin + b'\0'
+    data = write_packet(data)
+    return data
+
+
+def get_hash(password, scramble):
+    hash_stage1 = hashlib.sha1(password.encode()).digest()
+
+    hash_stage2 = hashlib.sha1(hash_stage1).digest()
+    to = hashlib.sha1(scramble + hash_stage2).digest()
+
+    length = len(to)
+    result = b''
+    for i in range(length):
+        x = (struct.unpack('B', to[i:i + 1])[0] ^
+             struct.unpack('B', hash_stage1[i:i + 1])[0])
+        result += struct.pack('B', x)
+    return result
+
+
+def lenenc_int(i):
+    if i < 0:
+        raise ValueError("Encoding %d is less than 0 - no representation in LengthEncodedInteger" % i)
+    elif i < 0xfb:
+        return struct.pack("!B", i)
+    elif i < (1 << 16):
+        return b'\xfc' + struct.pack('<H', i)
+    elif i < (1 << 24):
+        return b'\xfd' + struct.pack('<I', i)[:3]
+    elif i < (1 << 64):
+        return b'\xfe' + struct.pack('<Q', i)
+    else:
+        raise ValueError("Encoding %x is larger than %x - no representation in LengthEncodedInteger" % (i, (1 << 64)))
+
+
+def write_packet(payload):
+    return struct.pack('<I', len(payload))[:3] + struct.pack("!B", 1) + payload
