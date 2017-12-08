@@ -156,7 +156,7 @@ def crack_mysql(ipaddrs, port, name, pwd, crack_result, pbar_crack):
                 temp_pwd = pwd.get().replace('\n', '')
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 sock.connect((ipaddrs, int(port)))
-                packet = sock.recv(254)  # .decode('utf-8','replace')
+                packet = sock.recv(254)
                 plugin, scramble = get_scramble(packet)
                 if not scramble: return
                 auth_data = get_auth_data(name, temp_pwd, scramble, plugin)
@@ -168,13 +168,11 @@ def crack_mysql(ipaddrs, port, name, pwd, crack_result, pbar_crack):
                     crack_result.insert(END, result + '\n')
                     return
 
-
-
-                    # db = pymysql.connect(host=str(ipaddrs), port=int(port), user=name, password=temp_pwd)
-                    # db.close()
-                    # result = '[*]INFO：爆破成功' + '>' * 20 + '用户名为：' + name + '  ' + '密码为：' + temp_pwd
-                    # crack_result.insert(END, result + '\n')
-                    # return
+                # db = pymysql.connect(host=str(ipaddrs), port=int(port), user=name, password=temp_pwd)
+                # db.close()
+                # result = '[*]INFO：爆破成功' + '>' * 20 + '用户名为：' + name + '  ' + '密码为：' + temp_pwd
+                # crack_result.insert(END, result + '\n')
+                # return
             except Exception as e:
                 print(e)
                 pass
@@ -348,28 +346,28 @@ def get_scramble(packet):
 def get_auth_data(user, password, scramble, plugin):
     user_hex = user.encode()
     pass_hex = get_hash(password, scramble)
-    data = b'\x05\xa2+\x00\x01\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' + user_hex + b'\0'
-    data += lenenc_int(len(pass_hex)) + pass_hex
-    data += plugin + b'\0'
+    data = b'\x05\xa2+\x00\x01\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' + user_hex + b'\0' + lenenc_int(len(pass_hex)) + pass_hex + plugin + b'\0'
     data = write_packet(data)
     return data
 
 
 def get_hash(password, scramble):
     hash_stage1 = hashlib.sha1(password.encode()).digest()
-
     hash_stage2 = hashlib.sha1(hash_stage1).digest()
     to = hashlib.sha1(scramble + hash_stage2).digest()
-
-    length = len(to)
-    result = b''
-    for i in range(length):
-        x = (struct.unpack('B', to[i:i + 1])[0] ^
-             struct.unpack('B', hash_stage1[i:i + 1])[0])
-        result += struct.pack('B', x)
+    # pymysql source code
+    #
+    # length = len(to)
+    # result = b''
+    # for i in range(length):
+    #     x = (struct.unpack('B', to[i:i + 1])[0] ^
+    #          struct.unpack('B', hash_stage1[i:i + 1])[0])
+    #     result += struct.pack('B', x)
+    reply = [ord(to[i:i + 1]) ^ ord(hash_stage1[i:i + 1]) for i in range(len(to))]
+    result = struct.pack('20B', *reply)
     return result
 
-
+# pymysql source code
 def lenenc_int(i):
     if i < 0:
         raise ValueError("Encoding %d is less than 0 - no representation in LengthEncodedInteger" % i)
