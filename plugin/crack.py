@@ -347,7 +347,7 @@ def get_auth_data(user, password, scramble, plugin):
     user_hex = user.encode()
     pass_hex = get_hash(password, scramble)
     data = b'\x05\xa2+\x00\x01\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' + user_hex + b'\0' + lenenc_int(len(pass_hex)) + pass_hex + plugin + b'\0'
-    data = write_packet(data)
+    data = struct.pack('<I', len(data))[:3] + struct.pack("!B", 1) + data
     return data
 
 
@@ -381,7 +381,3 @@ def lenenc_int(i):
         return b'\xfe' + struct.pack('<Q', i)
     else:
         raise ValueError("Encoding %x is larger than %x - no representation in LengthEncodedInteger" % (i, (1 << 64)))
-
-
-def write_packet(payload):
-    return struct.pack('<I', len(payload))[:3] + struct.pack("!B", 1) + payload
