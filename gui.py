@@ -336,7 +336,7 @@ class MainWindows:
         # 下拉框
         type = StringVar()
         cbox_type = ttk.Combobox(fm1_1, textvariable=type, width=5)
-        cbox_type['values'] = ('...', 'ssh', 'mysql', 'mssql', 'telnet', 'rdp', 'ftp')
+        cbox_type['values'] = ('...', 'ssh', 'rdp', 'ftp', 'mysql', 'mssql', 'telnet', 'postgresql')
         cbox_type.current(0)
         cbox_type.pack(side=LEFT, expand=1, fill=X)
         cbox_type.bind('<<ComboboxSelected>>', lambda x: change_cbox(x, type.get(), ports))
