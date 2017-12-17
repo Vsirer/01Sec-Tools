@@ -173,7 +173,7 @@ def row_click(event, tv):
     if tv.selection():
         # tv.item(tv.selection())['values'][0]
         # print(tv.selection())
-        url = tv.item(tv.selection())['values'][0].replace('\n', '')
+        url = tv.item(tv.selection())['values'][0].replace('\n', '').replace('\r','')
         webbrowser.open(url)
 
 
