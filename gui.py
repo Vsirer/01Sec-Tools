@@ -90,11 +90,11 @@ class MainWindows:
         Label(fm1, text='端口:').pack(side=LEFT, expand=1, fill=BOTH)
         ports = StringVar()
         entry_port = Entry(fm1, textvariable=ports).pack(side=LEFT, expand=1, fill=BOTH)
-        ports.set('1-1024')
+        ports.set('1-65535')
         Label(fm1, text='线程:').pack(side=LEFT, expand=1, fill=BOTH)
         threads = StringVar()
         entry_thread = Entry(fm1, textvariable=threads).pack(side=LEFT, expand=1, fill=BOTH)
-        threads.set(1)
+        threads.set(100)
 
         # 扫描按钮绑定事件
         btn_port = Button(fm1, text='扫描',
@@ -196,7 +196,7 @@ class MainWindows:
         dirfile = StringVar()
         entry_dict = Entry(fm1, textvariable=dirfile)
         entry_dict.pack(side=LEFT, expand=1, fill=BOTH)
-        dirfile.set(os.getcwd() + '/exploit/dir/dir.txt')
+        dirfile.set(os.getcwd() + '/exploit/dir/default.txt')
         entry_dict.bind('<ButtonRelease>', lambda x: choose_file(x, dirfile))
 
         # 下层分左右两边
@@ -211,7 +211,7 @@ class MainWindows:
         Label(fm_left_top, text='线程:').pack(side=LEFT, expand=1, fill=BOTH)
         threads_left = StringVar()
         entry_threads_left = Entry(fm_left_top, textvariable=threads_left, width=1).pack(side=LEFT, expand=1, fill=X)
-        threads_left.set(1)
+        threads_left.set(20)
         Label(fm_left_top, text='超时:').pack(side=LEFT, expand=1, fill=BOTH)
         time_left = StringVar()
         entry_time_left = Entry(fm_left_top, textvariable=time_left, width=1).pack(side=LEFT, expand=1, fill=X)
@@ -241,7 +241,7 @@ class MainWindows:
         Label(fm_right_top, text='线程:').pack(side=LEFT, expand=1, fill=BOTH)
         threads_right = StringVar()
         entry_threads_right = Entry(fm_right_top, textvariable=threads_right, width=1).pack(side=LEFT, expand=1, fill=X)
-        threads_right.set(1)
+        threads_right.set(20)
         Label(fm_right_top, text='超时:').pack(side=LEFT, expand=1, fill=BOTH)
         time_right = StringVar()
         entry_time_right = Entry(fm_right_top, textvariable=time_right, width=1).pack(side=LEFT, expand=1, fill=X)
@@ -355,7 +355,7 @@ class MainWindows:
         Label(fm1_2_1, text='线程:').pack(side=LEFT)
         threads = StringVar()
         entry_thread = Entry(fm1_2_1, textvariable=threads, width=1).pack(side=LEFT, expand=1, fill=BOTH)
-        threads.set(1)
+        threads.set(10)
 
         # 第二行容器
         fm1_2_2 = Frame(fm1_2)
